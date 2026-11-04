@@ -35,6 +35,8 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
 	implementation 'org.springframework.ai:spring-ai-vector-store'	
+	implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+	runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {

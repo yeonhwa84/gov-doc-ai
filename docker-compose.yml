@@ -1,0 +1,15 @@
+services:
+  pgvector:
+    image: pgvector/pgvector:pg17
+    container_name: gov-doc-ai-db
+    environment:
+      POSTGRES_DB: govdocai
+      POSTGRES_USER: govdocai
+      POSTGRES_PASSWORD: govdocai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

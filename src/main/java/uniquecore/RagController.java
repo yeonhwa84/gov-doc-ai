@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class RagController {
 
     private final ChatClient chatClient;
-    private final SimpleVectorStore vectorStore;
+    private final VectorStore vectorStore;
 
-    public RagController(ChatClient.Builder builder, SimpleVectorStore vectorStore) {
+    public RagController(ChatClient.Builder builder, VectorStore vectorStore) {
         this.chatClient = builder.build();
         this.vectorStore = vectorStore;
     }
