@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>청소년복지 법령 도우미</title>
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --ink: #1b2430;
+    --sub: #5b6676;
+    --line: #dde3eb;
+    --brand: #1f4e8c;
+    --brand-soft: #e8eff9;
+    --accent: #0f8a6c;
+    --warn: #b4442f;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    background: var(--brand);
+    color: #fff;
+    padding: 18px 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+  header .wrap { display: flex; align-items: center; gap: 12px; padding: 0; }
+  .logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(255,255,255,.15);
+    display: grid; place-items: center; font-weight: 700; font-size: 18px;
+  }
+  header h1 { font-size: 19px; margin: 0; letter-spacing: -0.3px; }
+  header p { margin: 2px 0 0; font-size: 13px; opacity: .8; }
+  .badge {
+    margin-left: auto; font-size: 12px; padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,.35); border-radius: 999px; white-space: nowrap;
+  }
+
+  main { padding: 28px 0 60px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  label.title { display: block; font-weight: 700; margin-bottom: 10px; }
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical;
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; font: inherit; color: inherit;
+  }
+  textarea:focus { outline: 2px solid var(--brand-soft); border-color: var(--brand); }
+  .row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .hint { color: var(--sub); font-size: 13px; }
+  button.primary {
+    margin-left: auto;
+    background: var(--brand); color: #fff; border: 0;
+    padding: 11px 22px; border-radius: 10px; font: inherit; font-weight: 700;
+    cursor: pointer;
+  }
+  button.primary:disabled { opacity: .5; cursor: wait; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    background: var(--brand-soft); color: var(--brand);
+    border: 0; border-radius: 999px; padding: 6px 12px;
+    font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .chip:hover { filter: brightness(.96); }
+
+  .status { display: none; align-items: center; gap: 10px; color: var(--sub); }
+  .status.on { display: flex; }
+  .spinner {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 3px solid var(--brand-soft); border-top-color: var(--brand);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-title { font-size: 14px; font-weight: 700; color: var(--sub); margin: 0 0 10px; }
+  .question { font-weight: 700; margin: 0 0 12px; }
+  .answer { white-space: pre-wrap; margin: 0; }
+  .answer.error { color: var(--warn); }
+  .meta { color: var(--sub); font-size: 12px; margin-top: 12px; }
+
+  .source { border-top: 1px solid var(--line); padding: 12px 0; }
+  .source:first-of-type { border-top: 0; padding-top: 0; }
+  .source summary {
+    display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none;
+  }
+  .source summary::-webkit-details-marker { display: none; }
+  .art { font-weight: 700; color: var(--brand); }
+  .score {
+    margin-left: auto; font-size: 12px; color: var(--accent);
+    background: #e6f5f0; border-radius: 6px; padding: 2px 8px;
+  }
+  .bar { height: 4px; background: var(--line); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .source pre {
+    white-space: pre-wrap; font: inherit; font-size: 14px;
+    background: #f8fafc; border-radius: 8px; padding: 12px; margin: 10px 0 0;
+  }
+  #result { display: none; }
+  footer { text-align: center; color: var(--sub); font-size: 12px; padding-bottom: 30px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo">法</div>
+    <div>
+      <h1>청소년복지 법령 도우미</h1>
+      <p>「청소년복지 지원법」 조문을 근거로 답변합니다</p>
+    </div>
+    <span class="badge">로컬 AI · 외부 전송 없음</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <label class="title" for="q">무엇이 궁금하세요?</label>
+    <textarea id="q" placeholder="예) 위기청소년의 정의는 무엇인가요?"></textarea>
+    <div class="row">
+      <span class="hint">Ctrl + Enter 로 질문하기</span>
+      <div class="status" id="status"><div class="spinner"></div><span id="elapsed">답변 생성 중… 0초</span></div>
+      <button class="primary" id="ask">질문하기</button>
+    </div>
+    <div class="chips">
+      <button class="chip">위기청소년의 정의는?</button>
+      <button class="chip">청소년상담복지센터는 누가 설치하나요?</button>
+      <button class="chip">가출청소년은 어떤 지원을 받을 수 있나요?</button>
+      <button class="chip">청소년 쉼터의 종류는?</button>
+    </div>
+  </section>
+
+  <section id="result">
+    <div class="card">
+      <p class="section-title">답변</p>
+      <p class="question" id="rq"></p>
+      <p class="answer" id="ra"></p>
+      <p class="meta" id="rm"></p>
+    </div>
+    <div class="card">
+      <p class="section-title">근거 조문 (검색 결과)</p>
+      <div id="rs"></div>
+    </div>
+  </section>
+</main>
+
+<footer>gov-doc-ai · Spring Boot + Spring AI + Ollama(EXAONE) + pgvector</footer>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const qInput = $("q"), askBtn = $("ask"), status = $("status"), elapsed = $("elapsed");
+  let timer = null;
+
+  document.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => { qInput.value = chip.textContent; ask(); });
+  });
+  askBtn.addEventListener("click", ask);
+  qInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.ctrlKey) ask();
+  });
+
+  function setLoading(on) {
+    askBtn.disabled = on;
+    status.classList.toggle("on", on);
+    clearInterval(timer);
+    if (on) {
+      const start = Date.now();
+      elapsed.textContent = "답변 생성 중… 0초";
+      timer = setInterval(() => {
+        elapsed.textContent = "답변 생성 중… " + Math.floor((Date.now() - start) / 1000) + "초";
+      }, 1000);
+    }
+  }
+
+  async function ask() {
+    const question = qInput.value.trim();
+    if (!question || askBtn.disabled) return;
+
+    setLoading(true);
+    const start = Date.now();
+    try {
+      const res = await fetch("/api/rag", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+      if (!res.ok) throw new Error("서버 응답 오류 (HTTP " + res.status + ")");
+      const data = await res.json();
+      render(question, data, (Date.now() - start) / 1000);
+    } catch (err) {
+      renderError(question, err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function render(question, data, sec) {
+    $("result").style.display = "block";
+    $("rq").textContent = "Q. " + question;
+    $("ra").textContent = data.answer || "(답변 없음)";
+    $("ra").classList.remove("error");
+    $("rm").textContent = "응답 시간 " + sec.toFixed(1) + "초";
+
+    const box = $("rs");
+    box.innerHTML = "";
+    (data.sources || []).forEach((s, i) => {
+      const pct = Math.max(0, Math.min(100, (s.score || 0) * 100));
+      const d = document.createElement("details");
+      d.className = "source";
+      if (i === 0) d.open = true;
+
+      const sum = document.createElement("summary");
+      const art = document.createElement("span");
+      art.className = "art";
+      art.textContent = (i + 1) + ". " + s.article;
+      const sc = document.createElement("span");
+      sc.className = "score";
+      sc.textContent = "유사도 " + (s.score != null ? s.score.toFixed(3) : "-");
+      sum.append(art, sc);
+
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const fill = document.createElement("i");
+      fill.style.width = pct + "%";
+      bar.append(fill);
+
+      const pre = document.createElement("pre");
+      pre.textContent = s.text;
+
+      d.append(sum, bar, pre);
+      box.append(d);
+    });
+    if (!data.sources || data.sources.length === 0) {
+      box.textContent = "검색된 조문이 없습니다.";
+    }
+    $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderError(question, msg) {
+    $("result").style.display = "block";
+    $("rq").textContent = "Q. " + question;
+    $("ra").textContent = "답변을 가져오지 못했습니다: " + msg +
+      "\nOllama와 DB(docker)가 실행 중인지 확인해 주세요.";
+    $("ra").classList.add("error");
+    $("rm").textContent = "";
+    $("rs").textContent = "";
+  }
+</script>
+</body>
+</html>
