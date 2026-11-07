@@ -8,11 +8,13 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
 
 @RestController
 public class RagController {
@@ -26,10 +28,14 @@ public class RagController {
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
+    private final double threshold;
 
-    public RagController(ChatClient.Builder builder, VectorStore vectorStore) {
+
+    public RagController(ChatClient.Builder builder, VectorStore vectorStore,
+                         @Value("${rag.similarity-threshold:0.5}") double threshold) {
         this.chatClient = builder.build();
         this.vectorStore = vectorStore;
+        this.threshold = threshold;
     }
 
     /** 화면에 돌려줄 근거 조문 */
@@ -72,14 +78,24 @@ public class RagController {
         return answer + "\n\n[검색된 조문] " + sources;
     }
 
-    // 1) 질문과 가까운 조문 3개 검색
+    // 1) 질문과 가까운 조문 3개 검색 (기준값 미만은 제외)
     private List<Document> search(String q) {
         return vectorStore.similaritySearch(
-                SearchRequest.builder().query(q).topK(3).build());
+                SearchRequest.builder()
+                        .query(q)
+                        .topK(3)
+                        .similarityThreshold(threshold)
+                        .build());
     }
+
 
     // 2) 검색된 조문만 근거로 답변 생성
     private String generate(String q, List<Document> hits) {
+        if (hits.isEmpty()) {
+            return "제공된 법령에서 확인할 수 없습니다. (관련 조문 유사도가 기준값 "
+                    + threshold + " 미만)";
+        }
+
         String context = hits.stream()
                 .map(d -> "[" + d.getMetadata().get("article") + "]\n" + d.getText())
                 .collect(Collectors.joining("\n\n"));
