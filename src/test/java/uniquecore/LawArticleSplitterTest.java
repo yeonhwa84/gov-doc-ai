@@ -30,4 +30,21 @@ class LawArticleSplitterTest {
 
         assertThat(docs).isEmpty();
     }
+
+        @Test
+    void 긴_조문은_여러_조각으로_나누고_모든_조각에_조문_제목을_붙인다() {
+        StringBuilder sb = new StringBuilder("제2조(정의) 이 법에서 사용하는 용어의 뜻은 다음과 같다.\n");
+        for (int i = 1; i <= 8; i++) {
+            sb.append(i).append(". \"용어").append(i).append("\"란 ")
+              .append("설명 문장이 길게 이어지는 정의 내용입니다. ".repeat(3)).append("\n");
+        }
+
+        List<Document> docs = LawArticleSplitter.split(sb.toString(), "test");
+
+        assertThat(docs.size()).isGreaterThan(1);
+        assertThat(docs).allSatisfy(d -> {
+            assertThat(d.getMetadata().get("article")).isEqualTo("제2조");
+            assertThat(d.getText()).startsWith("제2조(정의)");
+        });
+    }
 }
